@@ -2,3 +2,6 @@
 Lets users download all of the Roblox client and studio stuff from the setup website. Also automatically puts the files in the right place. Written in Python.
 
 The output and extra's folders contain parts of an example downloaded build.
+Currently supported builds:
+* Roblox Player for Windows
+* Roblox Studio for Windows
