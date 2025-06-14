@@ -6,7 +6,7 @@ Currently supported builds:
 * Roblox Player for Windows
 * Roblox Studio for Windows
 
-Keep in mind this program also downloads files who's name start with a dot (.), which are removed by the official Roblox installers on install.
+Keep in mind this program also downloads files who's name start with a dot (.) and keepme, which are removed by the official Roblox installers on install.
 
 ## Todo
 * Find out where AppSettings.xml comes from.
