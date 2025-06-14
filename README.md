@@ -5,3 +5,5 @@ The output and extra's folders contain parts of an example downloaded build.
 Currently supported builds:
 * Roblox Player for Windows
 * Roblox Studio for Windows
+
+Keep in mind this program also downloads files who's name start with a dot (.), which are removed by the official Roblox installers on install.
