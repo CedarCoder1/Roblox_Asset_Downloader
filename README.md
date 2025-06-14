@@ -7,3 +7,6 @@ Currently supported builds:
 * Roblox Studio for Windows
 
 Keep in mind this program also downloads files who's name start with a dot (.), which are removed by the official Roblox installers on install.
+
+## Todo
+* Find out where AppSettings.xml comes from.
