@@ -10,3 +10,7 @@ Keep in mind this program also downloads files who's name start with a dot (.), 
 
 ## Todo
 * Find out where AppSettings.xml comes from.
+* Mac OS Support
+* Make the Extra downloads feature, so all other stuff from the cdn can be downloaded easily.
+* Archive.org support.
+* RCCService support (only available rccservice builds might be saved on archive.org).
