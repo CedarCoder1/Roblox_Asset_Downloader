@@ -3,10 +3,9 @@ import requests
 import zipfile
 # AppSettings.xml is missing! (Probably isn't even included.)
 # Please put the engine downloads into one function. Like this: def download_engine(versionHash):
-platform = input("Which platform? (Windows, Mac OS): ").lower() # , RCCService, Extra's)
+platform = input("Which platform? (Windows, Mac OS, RCCService, Extra's): ").lower()
 versionHash = input("What version? Type list to get a list downloaded. (For example: 012239e64a274975): ")
 buildtype = "" # buildtype is set somewhere else.      
-
 temp_dir = os.path.join(os.getcwd(), "Output") 
 extra_dir = os.path.join(os.getcwd(), "Extra's")   
 downloadVersionSite = "https://setup.rbxcdn.com/version-"                                 
@@ -81,12 +80,6 @@ def unzip_file(file, OtherLocation):
     elif OtherLocation == "Qt5": 
         with zipfile.ZipFile(os.path.join(temp_dir, file), 'r') as zip_ref:
           zip_ref.extractall(os.path.join(temp_dir, "Plugins", file.split('.')[0]))
-    elif OtherLocation == "PlatformContent-shared_compression_dictionaries": 
-        with zipfile.ZipFile(os.path.join(temp_dir, file), 'r') as zip_ref:
-          zip_ref.extractall(os.path.join(temp_dir, "PlatformContent", "pc", "shared_compression_dictionaries"))
-    elif OtherLocation == "content-api_docs": 
-        with zipfile.ZipFile(os.path.join(temp_dir, file), 'r') as zip_ref:
-          zip_ref.extractall(os.path.join(temp_dir, "content", "api_docs"))
     os.remove(os.path.join(temp_dir, file))
     print("Successfully unzipped: " + str(file))
     return file
@@ -98,7 +91,48 @@ def unzip_extra(file):
     print("Successfully unzipped: " + str(file))
     return file
 
-def download_engine(versionHash): # For downloading mutual folders and files.
+# List Downloader
+if versionHash.lower() == "list":
+    # RobloxApp
+    download = download_extra("https://setup.rbxcdn.com/DeployHistory.txt")
+    os.rename(os.path.join(extra_dir, "DeployHistory.txt"), os.path.join(extra_dir, "DeployHistory (Windows).txt"))
+    download = download_extra("https://setup.rbxcdn.com/mac/DeployHistory.txt")
+    os.rename(os.path.join(extra_dir, "DeployHistory.txt"), os.path.join(extra_dir, "DeployHistory (Mac OS).txt"))
+    print("Downloaded the list and put it into the Extra's folder.")
+    input("Done running, press Enter to exit.")
+    exit()
+
+# Here so the list downloader doesn't ask an useless question.
+buildType = input("Studio or Player?: ").lower() 
+
+# Windows
+if platform == "windows":
+    print("Starting downloads for Windows.")
+    # Player
+    if buildType == "player":
+        # RobloxApp
+        download = download_file(downloadVersionSite + versionHash + "-RobloxApp.zip")
+        unzip = unzip_file(download, False)
+
+        # redist
+        download = download_file(downloadVersionSite + versionHash + "-redist.zip")
+        unzip = unzip_file(download, False)
+
+        # RobloxPlayerLauncher
+        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
+
+        # WebView2
+        download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
+        unzip = unzip_file(download, False)
+
+        # ssl
+        download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
+        unzip = unzip_file(download, True)
+
+        # shaders
+        download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
+        unzip = unzip_file(download, True)
+
     # Content
         os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
 
@@ -132,76 +166,6 @@ def download_engine(versionHash): # For downloading mutual folders and files.
         # Content Textures2
         download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
         unzip = unzip_file("textures2.zip", "ContentTextures")
-
-        os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
-
-        # ExtraContent luapackages
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
-        unzip = unzip_file("luapackages.zip", "ExtraContent")
-
-        # ExtraContent models
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
-        unzip = unzip_file("models.zip", "ExtraContent")
-        
-        # ExtraContent textures
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
-        unzip = unzip_file("textures.zip", "ExtraContent")
-
-        # ExtraContent translations
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
-        unzip = unzip_file("translations.zip", "ExtraContent")
-
-# List Downloader
-if versionHash.lower() == "list":
-    # RobloxApp
-    download = download_extra("https://setup.rbxcdn.com/DeployHistory.txt")
-    os.rename(os.path.join(extra_dir, "DeployHistory.txt"), os.path.join(extra_dir, "DeployHistory (Windows).txt"))
-    download = download_extra("https://setup.rbxcdn.com/mac/DeployHistory.txt")
-    os.rename(os.path.join(extra_dir, "DeployHistory.txt"), os.path.join(extra_dir, "DeployHistory (Mac OS).txt"))
-    print("Downloaded the list and put it into the Extra's folder.")
-    input("Done running, press Enter to exit.")
-    exit()
-
-# Here so the list downloader doesn't ask an useless question.
-buildType = input("Studio or Player?: ").lower() 
-
-# Windows
-if platform == "windows":
-    print("Starting downloads for Windows.")
-    # Player
-    if buildType == "player":
-        # RobloxApp
-        download = download_file(downloadVersionSite + versionHash + "-RobloxApp.zip")
-        unzip = unzip_file(download, False)
-
-        # redist
-        download = download_file(downloadVersionSite + versionHash + "-redist.zip")
-        unzip = unzip_file(download, False)
-
-        # RobloxPlayerLauncher
-        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
-
-        # RobloxPlayerInstaller
-        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerInstaller.exe")
-
-        # WebView2
-        download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
-        unzip = unzip_file(download, False)
-
-        # WebView2RuntimeInstaller.zip
-        download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
-        unzip = unzip_file(download, True)
-
-        # ssl
-        download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
-        unzip = unzip_file(download, True)
-
-        # shaders
-        download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
-        unzip = unzip_file(download, True)
-
-    # Content
-        download_engine(versionHash)
         
     # Platform Content
         os.makedirs(os.path.join(temp_dir, "PlatformContent", "pc"), exist_ok=True)
@@ -217,20 +181,41 @@ if platform == "windows":
 
         # PlatformContent dictionaries
         download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
-        unzip = unzip_file("dictionaries.zip", "PlatformContent-shared_compression_dictionaries")
+        unzip = unzip_file("dictionaries.zip", "PlatformContent")
 
         # PlatformContent fonts
         download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
         unzip = unzip_file("fonts.zip", "PlatformContent")
 
     # ExtraContent
-        download_engine(versionHash)
+        os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
+
+        # ExtraContent luapackages
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
+        unzip = unzip_file("luapackages.zip", "ExtraContent")
+
+        # ExtraContent models
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
+        unzip = unzip_file("models.zip", "ExtraContent")
 
         # ExtraContent places
         download = download_file(downloadVersionSite + versionHash + "-extracontent-places.zip")
         unzip = unzip_file("places.zip", "ExtraContent")
+        
+        # ExtraContent textures
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
+        unzip = unzip_file("textures.zip", "ExtraContent")
+
+        # ExtraContent translations
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
+        unzip = unzip_file("translations.zip", "ExtraContent")
 
     # EXTRA'S
+
+        # WebView2RuntimeInstaller.zip
+        download = download_extra(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
+        unzip = unzip_extra(download)
+
         # rbxManifest
         download = download_extra(downloadVersionSite + versionHash + "-rbxManifest.txt")
 
@@ -251,10 +236,6 @@ if platform == "windows":
         download = download_file(downloadVersionSite + versionHash + "-RibbonConfig.zip")
         unzip = unzip_file(download, True)
 
-        # ApplicationConfig
-        download = download_file(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
-        unzip = unzip_file(download, True)
-
         # BuiltInPlugins
         download = download_file(downloadVersionSite + versionHash + "-BuiltInPlugins.zip")
         unzip = unzip_file(download, True)
@@ -269,14 +250,14 @@ if platform == "windows":
 
         # LibrariesQt5
         download = download_file(downloadVersionSite + versionHash + "-LibrariesQt5.zip")
-        unzip = unzip_file(download, False)
+        unzip = unzip_file(download, "Qt5")
 
         # Plugins
         download = download_file(downloadVersionSite + versionHash + "-Plugins.zip")
         unzip = unzip_file(download, True)
 
-        # RobloxStudioInstaller.exe
-        download = download_file(downloadVersionSite + versionHash + "-RobloxStudioInstaller.exe")
+        # RobloxStudioLauncherBeta.exe
+        download = download_file(downloadVersionSite + versionHash + "-RobloxStudioLauncherBeta.exe")
 
         # StudioFonts
         download = download_file(downloadVersionSite + versionHash + "-StudioFonts.zip")
@@ -299,25 +280,72 @@ if platform == "windows":
         unzip = unzip_file(download, True)
 
     # Content
-        download_engine(versionHash)
+        os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
 
-        # Content api-docs
+        # BuiltInPlugins
         download = download_file(downloadVersionSite + versionHash + "-content-api-docs.zip")
-        unzip = unzip_file(download, "content-api_docs")
+        unzip = unzip_file(download, "content")
+
+        # Content Avatar
+        download = download_file(downloadVersionSite + versionHash + "-content-avatar.zip")
+        unzip = unzip_file(download, "Content")
+        
+        # Content Sky
+        download = download_file(downloadVersionSite + versionHash + "-content-sky.zip")
+        unzip = unzip_file(download, "Content")
+        
+        # Content Sounds
+        download = download_file(downloadVersionSite + versionHash + "-content-sounds.zip")
+        unzip = unzip_file(download, "Content")
+
+        # Content Models
+        download = download_file(downloadVersionSite + versionHash + "-content-models.zip")
+        unzip = unzip_file(download, "Content")
+
+        # Content Configs
+        download = download_file(downloadVersionSite + versionHash + "-content-configs.zip")
+        unzip = unzip_file(download, "Content")
+
+        # Content Fonts
+        download = download_file(downloadVersionSite + versionHash + "-content-fonts.zip")
+        unzip = unzip_file(download, "Content")
 
         # Content studio_svg_textures
         download = download_file(downloadVersionSite + versionHash + "-content-studio_svg_textures.zip")
         unzip = unzip_file(download, "Content")
+
+        # Content Textures
+        os.makedirs(os.path.join(temp_dir, "content", "textures"), exist_ok=True)
+        
+        # Content Textures2
+        download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
+        unzip = unzip_file(download, "ContentTextures")
 
         # Content qt_translations
         download = download_file(downloadVersionSite + versionHash + "-content-qt_translations.zip")
         unzip = unzip_file(download, "Content")
 
     # ExtraContent
-        download_engine(versionHash)
+        os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
+
+        # ExtraContent luapackages
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
+        unzip = unzip_file(download, "ExtraContent")
+
+        # ExtraContent models
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
+        unzip = unzip_file(download, "ExtraContent")
 
         # ExtraContent scripts
         download = download_file(downloadVersionSite + versionHash + "-extracontent-scripts.zip")
+        unzip = unzip_file(download, "ExtraContent")
+
+        # ExtraContent textures
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
+        unzip = unzip_file(download, "ExtraContent")
+
+        # ExtraContent translations
+        download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
         unzip = unzip_file(download, "ExtraContent")
 
     # Platform Content
@@ -334,7 +362,7 @@ if platform == "windows":
 
         # PlatformContent dictionaries
         download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
-        unzip = unzip_file(download, "PlatformContent-shared_compression_dictionaries")
+        unzip = unzip_file(download, "PlatformContent")
 
         # PlatformContent fonts
         download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
@@ -345,6 +373,10 @@ if platform == "windows":
         # API Dump
         download = download_extra(downloadVersionSite + versionHash + "-API-Dump.json")
 
+        # Application Config
+        download = download_extra(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
+        unzip = unzip_extra(download)
+
         # Version.txt
         download = download_extra(downloadVersionSite + versionHash + "-API-Dump.json")
 
@@ -354,16 +386,13 @@ if platform == "windows":
         # rbxPkgManifest
         download = download_extra(downloadVersionSite + versionHash + "-rbxPkgManifest.txt")
 
-        # RobloxStudioLauncherBeta.exe
-        download = download_extra(downloadVersionSite + versionHash + "-RobloxStudioLauncherBeta.exe")
-
 # Mac OS
 if platform == "mac os":
-    print("Starting downloads for Mac OS.")
+    print("Starting downloads for Mac OS. (Not implemented yet...)")
     
 # RCCService
 if platform == "rccservice":
-    print("Starting downloads for RCCService.") 
+    print("Starting downloads for RCCService. (Not implemented yet...)") 
 
 # Extra's
 if platform == "extra's":
