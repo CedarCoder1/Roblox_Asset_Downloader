@@ -228,7 +228,7 @@ if platform == "windows":
     elif buildType == "studio":
         # Application Config
         download = download_file(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
-        unzip = unzip(download, True)
+        unzip = unzip_file(download, True)
         
         # redist
         download = download_file(downloadVersionSite + versionHash + "-redist.zip")
