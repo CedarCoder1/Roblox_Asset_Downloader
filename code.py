@@ -434,16 +434,15 @@ if platform == "mac os":
 # RCCService
 if platform == "rccservice":
     print("Starting downloads for RCCService.") 
-    # Main
-        # RCCService
+    # RCCService
     download = download_file(downloadVersionSite + versionHash + "-RCCServiceR7Z9CYTW7WBR95VW.zip")
     unzip = unzip_file(download, False)
 
-        # content
+    # content
     download = download_file(downloadVersionSite + versionHash + "-contentXGTFDE2U040VW06D.zip")
     unzip = unzip_file(download, True)
  
-        # extracontent
+    # extracontent
     download = download_file(downloadVersionSite + versionHash + "-extracontentXGTFDE2U040VW06D.zip")
     unzip = unzip_file(download, True)
 
