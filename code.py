@@ -4,19 +4,18 @@ import zipfile
 # AppSettings.xml is missing! (Probably isn't even included.)
 # Please put the engine downloads into one function. Like this: def download_engine(versionHash):
 platform = input("Which platform? (Windows, Mac OS, RCCService, Extra's): ").lower()
-versionHash = input("What version? Type list to get a list downloaded. (For example: 012239e64a274975): ")
-buildtype = "" # buildtype is set somewhere else.      
-temp_dir = os.path.join(os.getcwd(), "Output") 
-extra_dir = os.path.join(os.getcwd(), "Extra's")   
-downloadVersionSite = "https://setup.rbxcdn.com/version-"                                 
+versionHash = input("What version hash? Type list to get a list downloaded. (For example: 012239e64a274975): ")
+buildtype = "" # buildtype is set somewhere else.
+temp_dir = os.path.join(os.getcwd(), "Output")
+extra_dir = os.path.join(os.getcwd(), "Extra's")
+downloadVersionSite = "https://setup.rbxcdn.com/version-"
+downloadVersionSiteMac = "https://setup.rbxcdn.com/mac/version-"
 
 def download_file(url):
     print("Downloading " + url.split('/')[3])
     local_filename = url
     if local_filename.find("content-platform") != -1:
         local_filename = url.split('-')[4]
-    elif local_filename.find("content-api") != -1:
-        local_filename = "content-api-docs.zip"
     elif local_filename.find("content") != -1 or local_filename.find("extracontent") != -1:
         local_filename = url.split('-')[3]
     else:
@@ -77,9 +76,9 @@ def unzip_file(file, OtherLocation):
     elif OtherLocation == "ExtraContent": 
         with zipfile.ZipFile(os.path.join(temp_dir, file), 'r') as zip_ref:
           zip_ref.extractall(os.path.join(temp_dir, "ExtraContent", file.split('.')[0]))
-    elif OtherLocation == "Qt5": 
+    elif OtherLocation == "StudioContent": 
         with zipfile.ZipFile(os.path.join(temp_dir, file), 'r') as zip_ref:
-          zip_ref.extractall(os.path.join(temp_dir, "Plugins", file.split('.')[0]))
+          zip_ref.extractall(os.path.join(temp_dir, "StudioContent", file.split('.')[0]))
     os.remove(os.path.join(temp_dir, file))
     print("Successfully unzipped: " + str(file))
     return file
@@ -103,7 +102,7 @@ if versionHash.lower() == "list":
     exit()
 
 # Here so the list downloader doesn't ask an useless question.
-buildType = input("Studio or Player?: ").lower() 
+buildType = input("Studio or Player?: ").lower()
 
 # Windows
 if platform == "windows":
@@ -113,17 +112,24 @@ if platform == "windows":
         # RobloxApp
         download = download_file(downloadVersionSite + versionHash + "-RobloxApp.zip")
         unzip = unzip_file(download, False)
+        
+        # RobloxPlayerInstaller.exe
+        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerInstaller.exe")
 
-        # redist
-        download = download_file(downloadVersionSite + versionHash + "-redist.zip")
-        unzip = unzip_file(download, False)
+        # redist -- Doesn't exist anymore.
+        # download = download_file(downloadVersionSite + versionHash + "-redist.zip")
+        # unzip = unzip_file(download, False)
 
-        # RobloxPlayerLauncher
-        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
+        # RobloxPlayerLauncher -- Doesn't exist anymore.
+        # download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
 
         # WebView2
         download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
         unzip = unzip_file(download, False)
+        
+        # WebView2RuntimeInstaller
+        download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
+        unzip = unzip_file(download, True)
 
         # ssl
         download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
@@ -212,10 +218,6 @@ if platform == "windows":
 
     # EXTRA'S
 
-        # WebView2RuntimeInstaller.zip
-        download = download_extra(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
-        unzip = unzip_extra(download)
-
         # rbxManifest
         download = download_extra(downloadVersionSite + versionHash + "-rbxManifest.txt")
 
@@ -224,10 +226,14 @@ if platform == "windows":
 
 # Studio        
     elif buildType == "studio":
+        # Application Config
+        download = download_file(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
+        unzip = unzip(download, True)
+        
         # redist
         download = download_file(downloadVersionSite + versionHash + "-redist.zip")
         unzip = unzip_file(download, False)
-
+        
         # RobloxStudio
         download = download_file(downloadVersionSite + versionHash + "-RobloxStudio.zip")
         unzip = unzip_file(download, False)
@@ -250,14 +256,14 @@ if platform == "windows":
 
         # LibrariesQt5
         download = download_file(downloadVersionSite + versionHash + "-LibrariesQt5.zip")
-        unzip = unzip_file(download, "Qt5")
+        unzip = unzip_file(download, False)
 
         # Plugins
         download = download_file(downloadVersionSite + versionHash + "-Plugins.zip")
         unzip = unzip_file(download, True)
 
-        # RobloxStudioLauncherBeta.exe
-        download = download_file(downloadVersionSite + versionHash + "-RobloxStudioLauncherBeta.exe")
+        # RobloxStudioInstaller.exe
+        download = download_file(downloadVersionSite + versionHash + "-RobloxStudioInstaller.exe")
 
         # StudioFonts
         download = download_file(downloadVersionSite + versionHash + "-StudioFonts.zip")
@@ -282,7 +288,7 @@ if platform == "windows":
     # Content
         os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
 
-        # BuiltInPlugins
+        # api-docs
         download = download_file(downloadVersionSite + versionHash + "-content-api-docs.zip")
         unzip = unzip_file(download, "content")
 
@@ -363,21 +369,26 @@ if platform == "windows":
         # PlatformContent dictionaries
         download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
         unzip = unzip_file(download, "PlatformContent")
+        os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "dictionaries"), os.path.join(temp_dir, "PlatformContent", "pc", "shared_compression_dictionaries")) # Otherwise the name isn't accurate.
 
         # PlatformContent fonts
         download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
         unzip = unzip_file(download, "PlatformContent")
+        
+    # Studio Content
+        os.makedirs(os.path.join(temp_dir, "StudioContent"), exist_ok=True)
+
+        # studiocontent-textures
+        download = download_file(downloadVersionSite + versionHash + "-studiocontent-textures.zip")
+        unzip = unzip_file(download, "StudioContent")
+ 
+        # studiocontent-models
+        download = download_file(downloadVersionSite + versionHash + "-studiocontent-models.zip")
+        unzip = unzip_file(download, "StudioContent")
 
     # EXTRA'S
 
         # API Dump
-        download = download_extra(downloadVersionSite + versionHash + "-API-Dump.json")
-
-        # Application Config
-        download = download_extra(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
-        unzip = unzip_extra(download)
-
-        # Version.txt
         download = download_extra(downloadVersionSite + versionHash + "-API-Dump.json")
 
         # rbxManifest
@@ -388,15 +399,56 @@ if platform == "windows":
 
 # Mac OS
 if platform == "mac os":
-    print("Starting downloads for Mac OS. (Not implemented yet...)")
+    print("Starting downloads for Mac OS.")
+
+# Player
+    if buildType == "player":
+    # Main
+        # Roblox.dmg
+        download = download_file(downloadVersionSiteMac + versionHash + "-Roblox.dmg")
+        unzip = unzip_file(download, False)
+        
+        # Roblox
+        download = download_file(downloadVersionSiteMac + versionHash + "-Roblox.zip")
+        unzip = unzip_file(download, False)
+        
+        # RobloxPlayer
+        download = download_file(downloadVersionSiteMac + versionHash + "-RobloxPlayer.zip")
+        unzip = unzip_file(download, False)
+
+# Studio        
+    elif buildType == "studio":
+    # Main
+        # Roblox.dmg
+        download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudio.dmg")
+        unzip = unzip_file(download, False)
+        
+        # Roblox
+        download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudio.zip")
+        unzip = unzip_file(download, False)
+        
+        # RobloxPlayer
+        download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudioApp.zip")
+        unzip = unzip_file(download, False)
     
 # RCCService
 if platform == "rccservice":
-    print("Starting downloads for RCCService. (Not implemented yet...)") 
+    print("Starting downloads for RCCService.") 
+    # Main
+        # RCCService
+        download = download_file(downloadVersionSite + versionHash + "-RCCServiceR7Z9CYTW7WBR95VW.zip")
+        unzip = unzip_file(download, False)
+
+        # content
+        download = download_file(downloadVersionSite + versionHash + "-contentXGTFDE2U040VW06D.zip")
+        unzip = unzip_file(download, True)
+ 
+        # extracontent
+        download = download_file(downloadVersionSite + versionHash + "-extracontentXGTFDE2U040VW06D.zip")
+        unzip = unzip_file(download, True)
 
 # Extra's
 if platform == "extra's":
     print("Starting downloads for Extra's.") 
     
 input("Done running, press Enter to exit.")
-# type: ignore
