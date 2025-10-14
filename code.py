@@ -436,16 +436,16 @@ if platform == "rccservice":
     print("Starting downloads for RCCService.") 
     # Main
         # RCCService
-        download = download_file(downloadVersionSite + versionHash + "-RCCServiceR7Z9CYTW7WBR95VW.zip")
-        unzip = unzip_file(download, False)
+    download = download_file(downloadVersionSite + versionHash + "-RCCServiceR7Z9CYTW7WBR95VW.zip")
+    unzip = unzip_file(download, False)
 
         # content
-        download = download_file(downloadVersionSite + versionHash + "-contentXGTFDE2U040VW06D.zip")
-        unzip = unzip_file(download, True)
+    download = download_file(downloadVersionSite + versionHash + "-contentXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, True)
  
         # extracontent
-        download = download_file(downloadVersionSite + versionHash + "-extracontentXGTFDE2U040VW06D.zip")
-        unzip = unzip_file(download, True)
+    download = download_file(downloadVersionSite + versionHash + "-extracontentXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, True)
 
 # Extra's
 if platform == "extra's":
