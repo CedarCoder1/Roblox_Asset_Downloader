@@ -1,8 +1,7 @@
 import os
 import requests
 import zipfile
-# AppSettings.xml is missing! (Probably isn't even included.)
-# Please put the engine downloads into one function. Like this: def download_engine(versionHash):
+
 platform = input("Which platform? (Windows, Mac OS, RCCService, Extra's): ").lower()
 versionHash = input("What version hash? Type list to get a list downloaded. (For example: 012239e64a274975): ")
 buildtype = "" # buildtype is set somewhere else.
@@ -91,7 +90,7 @@ def unzip_extra(file):
     return file
 
 # List Downloader
-if versionHash.lower() == "list":
+if versionHash == "list":
     # RobloxApp
     download = download_extra("https://setup.rbxcdn.com/DeployHistory.txt")
     os.rename(os.path.join(extra_dir, "DeployHistory.txt"), os.path.join(extra_dir, "DeployHistory (Windows).txt"))
@@ -101,308 +100,335 @@ if versionHash.lower() == "list":
     input("Done running, press Enter to exit.")
     exit()
 
-# Here so the list downloader doesn't ask an useless question.
-buildType = input("Studio or Player?: ").lower()
-
 # Windows
-if platform == "windows":
-    print("Starting downloads for Windows.")
+elif platform == "windows" or platform ==  "1":
+    # Here so the other downloaders don't ask useless questions.
+    buildType = input("Studio or Player?: ").lower()
+    print("Starting downloads for Windows." + "\n" + "-" * 20)
     # Player
-    if buildType == "player":
-        # RobloxApp
-        download = download_file(downloadVersionSite + versionHash + "-RobloxApp.zip")
-        unzip = unzip_file(download, False)
-        
-        # RobloxPlayerInstaller.exe
-        download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerInstaller.exe")
-
-        # redist -- Doesn't exist anymore.
-        # download = download_file(downloadVersionSite + versionHash + "-redist.zip")
-        # unzip = unzip_file(download, False)
-
-        # RobloxPlayerLauncher -- Doesn't exist anymore.
-        # download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
-
-        # WebView2
-        download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
-        unzip = unzip_file(download, False)
-        
-        # WebView2RuntimeInstaller
-        download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
-        unzip = unzip_file(download, True)
-
-        # ssl
-        download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
-        unzip = unzip_file(download, True)
-
-        # shaders
-        download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
-        unzip = unzip_file(download, True)
-
-    # Content
-        os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
-
-        # Content Avatar
-        download = download_file(downloadVersionSite + versionHash + "-content-avatar.zip")
-        unzip = unzip_file("avatar.zip", "Content")
-        
-        # Content Sky
-        download = download_file(downloadVersionSite + versionHash + "-content-sky.zip")
-        unzip = unzip_file("sky.zip", "Content")
-        
-        # Content Sounds
-        download = download_file(downloadVersionSite + versionHash + "-content-sounds.zip")
-        unzip = unzip_file("sounds.zip", "Content")
-        
-        # Content Models
-        download = download_file(downloadVersionSite + versionHash + "-content-models.zip")
-        unzip = unzip_file("models.zip", "Content")
-        
-        # Content Configs
-        download = download_file(downloadVersionSite + versionHash + "-content-configs.zip")
-        unzip = unzip_file("configs.zip", "Content")
-        
-        # Content Fonts
-        download = download_file(downloadVersionSite + versionHash + "-content-fonts.zip")
-        unzip = unzip_file("fonts.zip", "Content")
-        
-        # Content Textures
-        os.makedirs(os.path.join(temp_dir, "content", "textures"), exist_ok=True)
-        
-        # Content Textures2
-        download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
-        unzip = unzip_file("textures2.zip", "ContentTextures")
-        
-    # Platform Content
-        os.makedirs(os.path.join(temp_dir, "PlatformContent", "pc"), exist_ok=True)
-
-        # (Platform)Content Textures3
-        download = download_file(downloadVersionSite + versionHash + "-content-textures3.zip")
-        unzip = unzip_file("textures3.zip", "PlatformContent")
-        os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "textures3"), os.path.join(temp_dir, "PlatformContent", "pc", "textures")) # Otherwise the name isn't accurate.
-
-        # PlatformContent Terrain
-        download = download_file(downloadVersionSite + versionHash + "-content-terrain.zip")
-        unzip = unzip_file("terrain.zip", "PlatformContent")
-
-        # PlatformContent dictionaries
-        download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
-        unzip = unzip_file("dictionaries.zip", "PlatformContent")
-
-        # PlatformContent fonts
-        download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
-        unzip = unzip_file("fonts.zip", "PlatformContent")
-
-    # ExtraContent
-        os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
-
-        # ExtraContent luapackages
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
-        unzip = unzip_file("luapackages.zip", "ExtraContent")
-
-        # ExtraContent models
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
-        unzip = unzip_file("models.zip", "ExtraContent")
-
-        # ExtraContent places
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-places.zip")
-        unzip = unzip_file("places.zip", "ExtraContent")
-        
-        # ExtraContent textures
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
-        unzip = unzip_file("textures.zip", "ExtraContent")
-
-        # ExtraContent translations
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
-        unzip = unzip_file("translations.zip", "ExtraContent")
-
-    # EXTRA'S
-
-        # rbxManifest
-        download = download_extra(downloadVersionSite + versionHash + "-rbxManifest.txt")
-
-        # rbxPkgManifest
+    if buildType == "player" or buildType ==  "2":
+        # rbxPkgManifest download + list maker.
         download = download_extra(downloadVersionSite + versionHash + "-rbxPkgManifest.txt")
-
-# Studio        
-    elif buildType == "studio":
-        # Application Config
-        download = download_file(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
-        unzip = unzip_file(download, True)
+        with open(os.path.join(extra_dir, download), "r") as manifest_file:
+            manifest = manifest_file.read()
         
-        # redist
-        download = download_file(downloadVersionSite + versionHash + "-redist.zip")
-        unzip = unzip_file(download, False)
-        
-        # RobloxStudio
-        download = download_file(downloadVersionSite + versionHash + "-RobloxStudio.zip")
-        unzip = unzip_file(download, False)
+        downloaded_files = [] # Part of the system that tells the user what folders are missing download support.
 
-        # RibbonConfig
-        download = download_file(downloadVersionSite + versionHash + "-RibbonConfig.zip")
-        unzip = unzip_file(download, True)
-
-        # BuiltInPlugins
-        download = download_file(downloadVersionSite + versionHash + "-BuiltInPlugins.zip")
-        unzip = unzip_file(download, True)
-
-        # BuiltInStandalonePlugins
-        download = download_file(downloadVersionSite + versionHash + "-BuiltInStandalonePlugins.zip")
-        unzip = unzip_file(download, True)
-
-        # Libraries
-        download = download_file(downloadVersionSite + versionHash + "-Libraries.zip")
-        unzip = unzip_file(download, False)
-
-        # LibrariesQt5
-        download = download_file(downloadVersionSite + versionHash + "-LibrariesQt5.zip")
-        unzip = unzip_file(download, False)
-
-        # Plugins
-        download = download_file(downloadVersionSite + versionHash + "-Plugins.zip")
-        unzip = unzip_file(download, True)
-
-        # RobloxStudioInstaller.exe
-        download = download_file(downloadVersionSite + versionHash + "-RobloxStudioInstaller.exe")
-
-        # StudioFonts
-        download = download_file(downloadVersionSite + versionHash + "-StudioFonts.zip")
-        unzip = unzip_file(download, True)
-
-        # WebView2
-        download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
-        unzip = unzip_file(download, False)
-
-        # WebView2RuntimeInstaller
-        download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
-        unzip = unzip_file(download, True)
-
-        # shaders
-        download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
-        unzip = unzip_file(download, True)
-
-        # ssl
-        download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
-        unzip = unzip_file(download, True)
-
-    # Content
+        # Folders that have to be made.
         os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
-
-        # api-docs
-        download = download_file(downloadVersionSite + versionHash + "-content-api-docs.zip")
-        unzip = unzip_file(download, "content")
-
-        # Content Avatar
-        download = download_file(downloadVersionSite + versionHash + "-content-avatar.zip")
-        unzip = unzip_file(download, "Content")
-        
-        # Content Sky
-        download = download_file(downloadVersionSite + versionHash + "-content-sky.zip")
-        unzip = unzip_file(download, "Content")
-        
-        # Content Sounds
-        download = download_file(downloadVersionSite + versionHash + "-content-sounds.zip")
-        unzip = unzip_file(download, "Content")
-
-        # Content Models
-        download = download_file(downloadVersionSite + versionHash + "-content-models.zip")
-        unzip = unzip_file(download, "Content")
-
-        # Content Configs
-        download = download_file(downloadVersionSite + versionHash + "-content-configs.zip")
-        unzip = unzip_file(download, "Content")
-
-        # Content Fonts
-        download = download_file(downloadVersionSite + versionHash + "-content-fonts.zip")
-        unzip = unzip_file(download, "Content")
-
-        # Content studio_svg_textures
-        download = download_file(downloadVersionSite + versionHash + "-content-studio_svg_textures.zip")
-        unzip = unzip_file(download, "Content")
-
-        # Content Textures
         os.makedirs(os.path.join(temp_dir, "content", "textures"), exist_ok=True)
-        
-        # Content Textures2
-        download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
-        unzip = unzip_file(download, "ContentTextures")
-
-        # Content qt_translations
-        download = download_file(downloadVersionSite + versionHash + "-content-qt_translations.zip")
-        unzip = unzip_file(download, "Content")
-
-    # ExtraContent
+        os.makedirs(os.path.join(temp_dir, "PlatformContent", "pc"), exist_ok=True)
         os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
 
-        # ExtraContent luapackages
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
-        unzip = unzip_file(download, "ExtraContent")
+        for line in manifest.splitlines():
+            if line.endswith(".zip") or line.endswith(".exe"):
+                print(line)
+                if "RobloxApp.zip" in line: # RobloxApp.zip
+                    download = download_file(downloadVersionSite + versionHash + "-RobloxApp.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "RobloxApp.zip") # Keeps track of downloaded files using a table.
+                elif "RobloxPlayerInstaller.exe" in line: # RobloxPlayerInstaller.exe
+                    download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerInstaller.exe")
+                    downloaded_files.insert(1, "RobloxPlayerInstaller.exe")
+                elif "redist.zip" in line: # redist.zip
+                    download = download_file(downloadVersionSite + versionHash + "-redist.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "redist.zip")
+                elif "RobloxPlayerLauncher.exe" in line: # RobloxPlayerLauncher.exe
+                    download = download_file(downloadVersionSite + versionHash + "-RobloxPlayerLauncher.exe")
+                    downloaded_files.insert(1, "RobloxPlayerLauncher.exe")
+                elif "WebView2.zip" in line: # WebView2.zip
+                    download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "WebView2.zip")
+                elif "WebView2RuntimeInstaller.zip" in line: # WebView2RuntimeInstaller.zip
+                    download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "WebView2RuntimeInstaller.zip")
+                elif "ssl.zip" in line: # ssl.zip
+                    download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "ssl.zip")
+                elif "shaders.zip" in line: # shaders.zip
+                    download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "shaders.zip")
+                # Content
+                elif "content-avatar.zip" in line: # content-avatar.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-avatar.zip")
+                    unzip = unzip_file("avatar.zip", "Content")
+                    downloaded_files.insert(1, "content-avatar.zip")
+                elif "content-sky.zip" in line: # content-sky.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-sky.zip")
+                    unzip = unzip_file("sky.zip", "Content")
+                    downloaded_files.insert(1, "content-sky.zip")
+                elif "content-sounds.zip" in line: # content-sounds.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-sounds.zip")
+                    unzip = unzip_file("sounds.zip", "Content")
+                    downloaded_files.insert(1, "content-sounds.zip")
+                elif "content-models.zip" in line and not "extra" in line: # content-models.zip <-- With extra check to stop extracontent-models from glitching out.
+                    download = download_file(downloadVersionSite + versionHash + "-content-models.zip")
+                    unzip = unzip_file("models.zip", "Content")
+                    downloaded_files.insert(1, "content-models.zip")
+                elif "content-configs.zip" in line: # content-configs.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-configs.zip")
+                    unzip = unzip_file("configs.zip", "Content")
+                    downloaded_files.insert(1, "content-configs.zip")
+                elif "content-fonts.zip" in line: # content-fonts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-fonts.zip")
+                    unzip = unzip_file("fonts.zip", "Content")
+                    downloaded_files.insert(1, "content-fonts.zip")
+                elif "content-textures2.zip" in line: # content-textures2.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
+                    unzip = unzip_file("textures2.zip", "ContentTextures")
+                    downloaded_files.insert(1, "content-textures2.zip")
+                # PlatformContent
+                elif "content-textures3.zip" in line: # content-textures3.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-textures3.zip")
+                    unzip = unzip_file("textures3.zip", "PlatformContent")
+                    os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "textures3"), os.path.join(temp_dir, "PlatformContent", "pc", "textures")) # Otherwise the name isn't accurate.
+                    downloaded_files.insert(1, "content-textures3.zip")
+                elif "content-terrain.zip" in line: # content-terrain.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-terrain.zip")
+                    unzip = unzip_file("terrain.zip", "PlatformContent")
+                    downloaded_files.insert(1, "content-terrain.zip")
+                elif "content-platform-dictionaries.zip" in line: # content-platform-dictionaries.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
+                    unzip = unzip_file("dictionaries.zip", "PlatformContent")
+                    downloaded_files.insert(1, "content-platform-dictionaries.zip")
+                elif "content-platform-fonts.zip" in line: # content-platform-fonts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
+                    unzip = unzip_file("fonts.zip", "PlatformContent")
+                    downloaded_files.insert(1, "content-platform-fonts.zip")
+                # ExtraContent
+                elif "extracontent-luapackages.zip" in line: # extracontent-luapackages.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
+                    unzip = unzip_file("luapackages.zip", "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-luapackages.zip")
+                elif "extracontent-models.zip" in line: # extracontent-models.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
+                    unzip = unzip_file("models.zip", "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-models.zip")
+                elif "extracontent-places.zip" in line: # extracontent-places.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-places.zip")
+                    unzip = unzip_file("places.zip", "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-places.zip")
+                elif "extracontent-textures.zip" in line: # extracontent-textures.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
+                    unzip = unzip_file("textures.zip", "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-textures.zip")
+                elif "extracontent-translations.zip" in line: # extracontent-translations.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
+                    unzip = unzip_file("translations.zip", "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-translations.zip")
+        # EXTRA's
+        download = download_extra(downloadVersionSite + versionHash + "-rbxManifest.txt") # rbxManifest
 
-        # ExtraContent models
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
-        unzip = unzip_file(download, "ExtraContent")
+        # File Check
+        print("-" * 20)
+        fileCheckTable = []
+        for entry in manifest.splitlines(): # Go through each documented downloaded file.
+            if entry not in downloaded_files and (entry.endswith(".zip") or entry.endswith(".exe")):
+                fileCheckTable.insert(1, entry)
+           
+        for entry in fileCheckTable:
+            print(entry + " not downloaded.")
 
-        # ExtraContent scripts
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-scripts.zip")
-        unzip = unzip_file(download, "ExtraContent")
-
-        # ExtraContent textures
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
-        unzip = unzip_file(download, "ExtraContent")
-
-        # ExtraContent translations
-        download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
-        unzip = unzip_file(download, "ExtraContent")
-
-    # Platform Content
-        os.makedirs(os.path.join(temp_dir, "PlatformContent", "pc"), exist_ok=True)
-
-        # (Platform)Content Textures3
-        download = download_file(downloadVersionSite + versionHash + "-content-textures3.zip")
-        unzip = unzip_file(download, "PlatformContent")
-        os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "textures3"), os.path.join(temp_dir, "PlatformContent", "pc", "textures")) # Otherwise the name isn't accurate.
-
-        # PlatformContent Terrain
-        download = download_file(downloadVersionSite + versionHash + "-content-terrain.zip")
-        unzip = unzip_file(download, "PlatformContent")
-
-        # PlatformContent dictionaries
-        download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
-        unzip = unzip_file(download, "PlatformContent")
-        os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "dictionaries"), os.path.join(temp_dir, "PlatformContent", "pc", "shared_compression_dictionaries")) # Otherwise the name isn't accurate.
-
-        # PlatformContent fonts
-        download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
-        unzip = unzip_file(download, "PlatformContent")
+    # Studio
+    elif buildType == "studio" or buildType == "1":
+        # rbxPkgManifest download + list maker.
+        download = download_extra(downloadVersionSite + versionHash + "-rbxPkgManifest.txt")
+        with open(os.path.join(extra_dir, download), "r") as manifest_file:
+            manifest = manifest_file.read()
         
-    # Studio Content
+        downloaded_files = [] # Part of the system that tells the user what folders are missing download support.
+
+        # Folders that have to be made.
+        os.makedirs(os.path.join(temp_dir, "content"), exist_ok=True)
+        os.makedirs(os.path.join(temp_dir, "content", "textures"), exist_ok=True)
+        os.makedirs(os.path.join(temp_dir, "PlatformContent", "pc"), exist_ok=True)
+        os.makedirs(os.path.join(temp_dir, "ExtraContent"), exist_ok=True)
         os.makedirs(os.path.join(temp_dir, "StudioContent"), exist_ok=True)
 
-        # studiocontent-textures
-        download = download_file(downloadVersionSite + versionHash + "-studiocontent-textures.zip")
-        unzip = unzip_file(download, "StudioContent")
- 
-        # studiocontent-models
-        download = download_file(downloadVersionSite + versionHash + "-studiocontent-models.zip")
-        unzip = unzip_file(download, "StudioContent")
-
-    # EXTRA'S
-
+        for line in manifest.splitlines():
+            if line.endswith(".zip") or line.endswith(".exe"):
+                print(line)
+                if "ApplicationConfig.zip" in line: # ApplicationConfig.zip
+                    download = download_file(downloadVersionSite + versionHash + "-ApplicationConfig.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "ApplicationConfig.zip") # Keeps track of downloaded files using a table.
+                elif "redist.zip" in line: # redist.zip
+                    download = download_file(downloadVersionSite + versionHash + "-redist.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "redist.zip")
+                elif "RobloxStudio.zip" in line: # RobloxStudio.zip
+                    download = download_file(downloadVersionSite + versionHash + "-RobloxStudio.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "RobloxStudio.zip")
+                    # RobloxStudioInstaller.exe <-- Doing this, cuz the .exe is missing from the manifest files.
+                    download = download_file(downloadVersionSite + versionHash + "-RobloxStudioInstaller.exe")
+                    downloaded_files.insert(1, "RobloxStudioInstaller.exe")
+                elif "RibbonConfig.zip" in line: # RibbonConfig.zip
+                    download = download_file(downloadVersionSite + versionHash + "-RibbonConfig.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "RibbonConfig.zip")
+                elif "BuiltInPlugins.zip" in line: # BuiltInPlugins.zip
+                    download = download_file(downloadVersionSite + versionHash + "-BuiltInPlugins.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "BuiltInPlugins.zip")
+                elif "BuiltInStandalonePlugins.zip" in line: # BuiltInStandalonePlugins.zip
+                    download = download_file(downloadVersionSite + versionHash + "-BuiltInStandalonePlugins.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "BuiltInStandalonePlugins.zip")
+                elif "Libraries.zip" in line: # Libraries.zip
+                    download = download_file(downloadVersionSite + versionHash + "-Libraries.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "Libraries.zip")
+                elif "LibrariesQt5.zip" in line: # LibrariesQt5.zip
+                    download = download_file(downloadVersionSite + versionHash + "-LibrariesQt5.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "LibrariesQt5.zip")
+                elif "Plugins.zip" in line: # Plugins.zip
+                    download = download_file(downloadVersionSite + versionHash + "-Plugins.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "Plugins.zip")
+                elif "StudioFonts.zip" in line: # StudioFonts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-StudioFonts.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "StudioFonts.zip")
+                elif "WebView2.zip" in line: # WebView2.zip
+                    download = download_file(downloadVersionSite + versionHash + "-WebView2.zip")
+                    unzip = unzip_file(download, False)
+                    downloaded_files.insert(1, "WebView2.zip")
+                elif "WebView2RuntimeInstaller.zip" in line: # WebView2RuntimeInstaller.zip
+                    download = download_file(downloadVersionSite + versionHash + "-WebView2RuntimeInstaller.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "WebView2RuntimeInstaller.zip")
+                elif "shaders.zip" in line: # shaders.zip
+                    download = download_file(downloadVersionSite + versionHash + "-shaders.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "shaders.zip")
+                elif "ssl.zip" in line: # ssl.zip
+                    download = download_file(downloadVersionSite + versionHash + "-ssl.zip")
+                    unzip = unzip_file(download, True)
+                    downloaded_files.insert(1, "ssl.zip")
+                # Content
+                elif "content-api-docs.zip" in line: # content-api-docs.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-api-docs.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-api-docs.zip")
+                    os.rename(os.path.join(temp_dir, "Content", "api"), os.path.join(temp_dir, temp_dir, "Content", "api_docs")) # Otherwise the name isn't accurate.
+                elif "content-avatar.zip" in line: # content-avatar.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-avatar.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-avatar.zip")
+                elif "content-sky.zip" in line: # content-sky.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-sky.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-sky.zip")
+                elif "content-sounds.zip" in line: # content-sounds.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-sounds.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-sounds.zip")
+                elif "content-models.zip" in line and not "extra" in line and not "studio" in line: # content-models.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-models.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-models.zip")
+                elif "content-configs.zip" in line: # content-configs.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-configs.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-configs.zip")
+                elif "content-fonts.zip" in line: # content-fonts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-fonts.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-fonts.zip")
+                elif "content-studio_svg_textures.zip" in line: # content-studio_svg_textures.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-studio_svg_textures.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-studio_svg_textures.zip")
+                elif "content-qt_translations.zip" in line: # content-qt_translations.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-qt_translations.zip")
+                    unzip = unzip_file(download, "Content")
+                    downloaded_files.insert(1, "content-qt_translations.zip")
+                elif "content-textures2.zip" in line: # content-textures2.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-textures2.zip")
+                    unzip = unzip_file(download, "ContentTextures")
+                    downloaded_files.insert(1, "content-textures2.zip")
+                # ExtraContent
+                elif "extracontent-luapackages.zip" in line: # extracontent-luapackages.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-luapackages.zip")
+                    unzip = unzip_file(download, "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-luapackages.zip")
+                elif "extracontent-models.zip" in line: # extracontent-models.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-models.zip")
+                    unzip = unzip_file(download, "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-models.zip")
+                elif "extracontent-scripts.zip" in line: # extracontent-scripts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-scripts.zip")
+                    unzip = unzip_file(download, "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-scripts.zip")
+                elif "extracontent-textures.zip" in line: # extracontent-textures.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-textures.zip")
+                    unzip = unzip_file(download, "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-textures.zip")
+                elif "extracontent-translations.zip" in line: # extracontent-translations.zip
+                    download = download_file(downloadVersionSite + versionHash + "-extracontent-translations.zip")
+                    unzip = unzip_file(download, "ExtraContent")
+                    downloaded_files.insert(1, "extracontent-translations.zip")
+                # PlatformContent
+                elif "content-textures3.zip" in line: # content-textures3.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-textures3.zip")
+                    unzip = unzip_file(download, "PlatformContent")
+                    downloaded_files.insert(1, "content-textures3.zip")
+                    os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "textures3"), os.path.join(temp_dir, "PlatformContent", "pc", "textures")) # Otherwise the name isn't accurate.
+                elif "content-terrain.zip" in line: # content-terrain.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-terrain.zip")
+                    unzip = unzip_file(download, "PlatformContent")
+                    downloaded_files.insert(1, "content-terrain.zip")
+                elif "content-platform-dictionaries.zip" in line: # content-platform-dictionaries.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-platform-dictionaries.zip")
+                    unzip = unzip_file(download, "PlatformContent")
+                    downloaded_files.insert(1, "content-platform-dictionaries.zip")
+                    os.rename(os.path.join(temp_dir, "PlatformContent", "pc", "dictionaries"), os.path.join(temp_dir, "PlatformContent", "pc", "shared_compression_dictionaries")) # Otherwise the name isn't accurate.
+                elif "content-platform-fonts.zip" in line: # content-platform-fonts.zip
+                    download = download_file(downloadVersionSite + versionHash + "-content-platform-fonts.zip")
+                    unzip = unzip_file(download, "PlatformContent")
+                    downloaded_files.insert(1, "content-platform-fonts.zip")
+                # StudioContent
+                elif "studiocontent-textures.zip" in line: # studiocontent-textures.zip
+                    download = download_file(downloadVersionSite + versionHash + "-studiocontent-textures.zip")
+                    unzip = unzip_file(download, "StudioContent")
+                    downloaded_files.insert(1, "studiocontent-textures.zip")
+                elif "studiocontent-models.zip" in line: # studiocontent-models.zip
+                    download = download_file(downloadVersionSite + versionHash + "-studiocontent-models.zip")
+                    unzip = unzip_file(download, "StudioContent")
+                    downloaded_files.insert(1, "studiocontent-models.zip")
+        # EXTRA'S
         # API Dump
         download = download_extra(downloadVersionSite + versionHash + "-API-Dump.json")
-
         # rbxManifest
         download = download_extra(downloadVersionSite + versionHash + "-rbxManifest.txt")
-
         # rbxPkgManifest
         download = download_extra(downloadVersionSite + versionHash + "-rbxPkgManifest.txt")
 
+        # File Check
+        print("-" * 20)
+        fileCheckTable = []
+        for entry in manifest.splitlines(): # Go through each documented downloaded file.
+            if entry not in downloaded_files and (entry.endswith(".zip") or entry.endswith(".exe")):
+                fileCheckTable.insert(1, entry)
+           
+        for entry in fileCheckTable:
+            print(entry + " not downloaded.")
+
 # Mac OS
-if platform == "mac os":
+elif platform == "mac os" or platform ==  "2":
+    # Here so the other downloaders don't ask useless questions.
+    buildType = input("Studio or Player?: ").lower()
     print("Starting downloads for Mac OS.")
 
-# Player
-    if buildType == "player":
+    # Player
+    if buildType == "player" or buildType ==  "2":
     # Main
         # Roblox.dmg
         download = download_file(downloadVersionSiteMac + versionHash + "-Roblox.dmg")
@@ -416,8 +442,8 @@ if platform == "mac os":
         download = download_file(downloadVersionSiteMac + versionHash + "-RobloxPlayer.zip")
         unzip = unzip_file(download, False)
 
-# Studio        
-    elif buildType == "studio":
+    # Studio        
+    elif buildType == "studio" or buildType ==  "1":
     # Main
         # Roblox.dmg
         download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudio.dmg")
@@ -430,24 +456,51 @@ if platform == "mac os":
         # RobloxPlayer
         download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudioApp.zip")
         unzip = unzip_file(download, False)
-    
+        
 # RCCService
-if platform == "rccservice":
+elif platform == "rccservice" or platform ==  "3":
     print("Starting downloads for RCCService.") 
     # RCCService
     download = download_file(downloadVersionSite + versionHash + "-RCCServiceR7Z9CYTW7WBR95VW.zip")
     unzip = unzip_file(download, False)
 
     # content
-    download = download_file(downloadVersionSite + versionHash + "-contentXGTFDE2U040VW06D.zip")
-    unzip = unzip_file(download, True)
+    download = download_file(downloadVersionSite + versionHash + "-RCC-contentXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
  
     # extracontent
-    download = download_file(downloadVersionSite + versionHash + "-extracontentXGTFDE2U040VW06D.zip")
-    unzip = unzip_file(download, True)
+    download = download_file(downloadVersionSite + versionHash + "-RCC-extracontentXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # Libraries
+    download = download_file(downloadVersionSite + versionHash + "-RCC-LibrariesXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # Libraries
+    download = download_file(downloadVersionSite + versionHash + "-RCC-LibrariesXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # platformcontent
+    download = download_file(downloadVersionSite + versionHash + "-RCC-platformcontentXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # redist
+    download = download_file(downloadVersionSite + versionHash + "-RCC-redistXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # RobloxA5XGEOZ35LAFQUL2.exe
+    download = download_file(downloadVersionSite + versionHash + "-RCC-RobloxA5XGEOZ35LAFQUL2.exe")
+
+    # shaders
+    download = download_file(downloadVersionSite + versionHash + "-RCC-shadersXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
+
+    # ssl
+    download = download_file(downloadVersionSite + versionHash + "-RCC-sslXGTFDE2U040VW06D.zip")
+    unzip = unzip_file(download, False)
 
 # Extra's
-if platform == "extra's":
+elif platform == "extra's" or platform ==  "4":
     print("Starting downloads for Extra's.") 
     
-input("Done running, press Enter to exit.")
+input("Done running, press Enter to exit.") # type: ignore
