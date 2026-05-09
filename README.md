@@ -14,7 +14,16 @@ This program also downloads version specific files that aren't normally download
 # Mass Edition
 The mass edition python script found in this repository is a modifed version of the Roblox Asset Downloader made for bulk downloading version files. The script reads the bulk download list from a file called 'versionsToDownload.txt'. Example files for both the API version format and the 'normal' version format can be found under the 'mass edition examples' folder in this repository.
 
-## Todo
+# Version ID's
+Version ID's can be obtained from the following sources:
+* https://setup.rbxcdn.com/DeployHistory.txt
+* https://setup.rbxcdn.com/mac/DeployHistory.txt
+* https://web.archive.org/web/20260000000000*/https://clientsettings.roblox.com/v2/client-version/WindowsStudio64
+* https://web.archive.org/web/20260000000000*/https://clientsettings.roblox.com/v2/client-version/WindowsPlayer
+* https://web.archive.org/web/20260000000000*/https://clientsettings.roblox.com/v2/client-version/MacPlayer
+* https://web.archive.org/web/20260000000000*/https://clientsettings.roblox.com/v2/client-version/MacStudio
+
+# Todo
 * Correct file structure for MacOS.
 * Make the Extra downloads feature, so all other stuff from the cdn can be downloaded easily.
 * Check if the extra's folder contains ALL extra's.
