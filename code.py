@@ -1,6 +1,8 @@
 import os
 import requests
 import zipfile
+import shutil
+import time
 
 platform = input("Which platform? (Windows, Mac OS, RCCService, Extra's): ").lower()
 versionHash = input("What version hash? Type list to get a list downloaded. (For example: 012239e64a274975): ")
@@ -20,18 +22,20 @@ def download_file(url):
     else:
         local_filename = url.split('-')[2]
     location = os.path.join(temp_dir, local_filename)
-
-    # NOTE the stream=True parameter below
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(location, 'wb') as f:
-          for chunk in r.iter_content(chunk_size=8192): 
-            # If you have chunk encoded response uncomment if
-            # and set chunk_size parameter to None.
-            #if chunk: 
-            f.write(chunk)
-    print("Successfully downloaded: " + str(local_filename))
-    return local_filename
+    while True:
+        try:
+            with requests.get(url, stream=True) as r:
+                # This triggers an exception for 4xx or 5xx errors
+                r.raise_for_status() 
+                with open(location, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192): 
+                        if chunk: 
+                            f.write(chunk)
+            print("Successfully downloaded: " + str(local_filename))
+            return local_filename
+        except requests.exceptions.RequestException as e:
+            print(f"Download failed: {e}. Retrying in 5 seconds...")
+            time.sleep(5)
 
 def download_extra(url):
     print("Downloading " + url.split('/')[3])
@@ -45,16 +49,22 @@ def download_extra(url):
     else:
         local_filename = url.split('/')[3]
 
-    # NOTE the stream=True parameter below
-    with requests.get(url, stream=True) as r:
-        with open(os.path.join(extra_dir, local_filename), 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192): 
-                # If you have chunk encoded response uncomment if
-                # and set chunk_size parameter to None.
-                #if chunk: 
-                f.write(chunk)
-    print("Successfully downloaded: " + str(local_filename))
-    return local_filename
+    while True:
+        try:
+            # NOTE the stream=True parameter below
+            with requests.get(url, stream=True) as r:
+                # This ensures the code jumps to 'except' if the download fails (e.g. 404, 500)
+                r.raise_for_status()
+                
+                with open(os.path.join(extra_dir, local_filename), 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192): 
+                        if chunk: 
+                            f.write(chunk)
+            print("Successfully downloaded: " + str(local_filename))
+            return local_filename
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading {local_filename}: {e}. Retrying in 5 seconds...")
+            time.sleep(5)
 
 def unzip_file(file, OtherLocation):
     if OtherLocation == "Content": 
@@ -88,6 +98,13 @@ def unzip_extra(file):
     os.remove(os.path.join(extra_dir, file))
     print("Successfully unzipped: " + str(file))
     return file
+    
+def zipup_downloads(version):
+    shutil.make_archive(version, 'zip', temp_dir)
+    print("Successfully zipped up " +  version + ".")
+    shutil.rmtree(temp_dir)
+    os.makedirs(temp_dir)
+    print(f"Successfully cleared {temp_dir}.")
 
 # List Downloader
 if versionHash == "list":
@@ -233,6 +250,10 @@ elif platform == "windows" or platform ==  "1":
            
         for entry in fileCheckTable:
             print(entry + " not downloaded.")
+            
+        # Version Zipper
+        print("Zipping up " +  versionHash + ".")
+        zipup_downloads("version-" + versionHash)
 
     # Studio
     elif buildType == "studio" or buildType == "1":
@@ -421,6 +442,10 @@ elif platform == "windows" or platform ==  "1":
         for entry in fileCheckTable:
             print(entry + " not downloaded.")
 
+        # Version Zipper
+        print("Zipping up " +  versionHash + ".")
+        zipup_downloads("version-" + versionHash)
+
 # Mac OS
 elif platform == "mac os" or platform ==  "2":
     # Here so the other downloaders don't ask useless questions.
@@ -457,6 +482,9 @@ elif platform == "mac os" or platform ==  "2":
         download = download_file(downloadVersionSiteMac + versionHash + "-RobloxStudioApp.zip")
         unzip = unzip_file(download, False)
         
+    # Version Zipper
+    print("Zipping up " +  versionHash + ".")
+    zipup_downloads("version-" + versionHash)
 # RCCService
 elif platform == "rccservice" or platform ==  "3":
     print("Starting downloads for RCCService.") 
@@ -498,7 +526,11 @@ elif platform == "rccservice" or platform ==  "3":
     # ssl
     download = download_file(downloadVersionSite + versionHash + "-RCC-sslXGTFDE2U040VW06D.zip")
     unzip = unzip_file(download, False)
-
+    
+    # Version Zipper
+    print("Zipping up " +  versionHash + ".")
+    zipup_downloads("version-" + versionHash)
+    
 # Extra's
 elif platform == "extra's" or platform ==  "4":
     print("Starting downloads for Extra's.") 
